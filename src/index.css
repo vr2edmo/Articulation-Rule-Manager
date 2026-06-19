@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-edmo-bg text-edmo-ink antialiased;
+}
+
+/* Thin, branded scrollbars for the data tables */
+.scroll-thin::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  @apply bg-edmo-line rounded;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-3.5 py-2 text-sm font-bold
+      transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none
+      focus-visible:ring-2 focus-visible:ring-edmo-accent focus-visible:ring-offset-1;
+  }
+  .btn-primary {
+    @apply btn bg-edmo-navy text-white hover:bg-edmo-navy-700;
+  }
+  .btn-secondary {
+    @apply btn border border-edmo-line bg-white text-edmo-ink hover:bg-edmo-blue-50;
+  }
+  .btn-danger {
+    @apply btn border border-status-danger/30 bg-white text-status-danger hover:bg-red-50;
+  }
+  .btn-ghost {
+    @apply btn text-edmo-blue hover:bg-edmo-blue-50;
+  }
+  .input {
+    @apply w-full rounded-md border border-edmo-line bg-white px-3 py-2 text-sm text-edmo-ink
+      placeholder:text-edmo-muted/70 focus:border-edmo-accent focus:outline-none
+      focus:ring-1 focus:ring-edmo-accent;
+  }
+  .label {
+    @apply mb-1 block text-xs font-bold uppercase tracking-wide text-edmo-muted;
+  }
+  .card {
+    @apply rounded-lg border border-edmo-line bg-white shadow-card;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold;
+  }
+}
