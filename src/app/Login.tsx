@@ -23,13 +23,20 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-edmo-navy px-4">
-      <div className="w-full max-w-md">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-edmo-hero px-4">
+      {/* Academic Gold orb — echoes the design system hero specimen */}
+      <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-edmo-gold/30 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-purple-500/30 blur-3xl" />
+      <div className="relative w-full max-w-md">
         <div className="mb-6 flex justify-center">
           <Logo variant="light" />
         </div>
-        <div className="card p-7">
-          <h1 className="text-xl font-bold text-edmo-navy">Sign in</h1>
+        <div className="card p-7 shadow-hero">
+          <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-edmo-gold/15 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-gold-700">
+            <span className="h-1.5 w-1.5 rounded-full bg-edmo-gold" />
+            Supercharged admissions
+          </span>
+          <h1 className="text-xl font-extrabold tracking-tight text-edmo-navy">Sign in</h1>
           <p className="mt-1 text-sm text-edmo-muted">
             Articulation Rules Manager &amp; Course Catalog Manager
           </p>
