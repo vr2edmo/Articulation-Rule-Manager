@@ -8,6 +8,8 @@ import type {
   CatalogCourse,
   University,
   CurrentUser,
+  UniversityConfig,
+  UsageMonth,
 } from "./types";
 
 export const UNIVERSITIES: University[] = [
@@ -272,3 +274,69 @@ export const SEED_RULES: ArticulationRule[] = [
     version_history: [],
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Tool configuration defaults (Configuration tab)
+// ---------------------------------------------------------------------------
+export function defaultUniversityConfig(): UniversityConfig {
+  return {
+    transfer_credit: {
+      enabled: true,
+      max_transfer_credits: 60,
+      warning_threshold: 50,
+      min_grade: "C (2.0)",
+      auto_approve_full: false,
+      notify_counselor: true,
+      notify_registrar: true,
+    },
+    gpa: {
+      enabled: true,
+      scale: "4.0",
+      include_transfer: true,
+      min_good_standing: 2.0,
+      rounding: "2",
+    },
+    document_analyzer: {
+      enabled: true,
+      confidence_threshold: 85,
+      auto_flag_low_confidence: true,
+      ocr_language: "English",
+      detect_transcripts: true,
+      detect_syllabi: false,
+    },
+    email_extractor: {
+      enabled: true,
+      inbox_address: "transcripts@goedmo.com",
+      auto_extract: true,
+      allowed_domains: "",
+      forward_unrecognized: "",
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Usage & billing (Billing tab)
+// ---------------------------------------------------------------------------
+/** Flat per-transcript processing price billed to partner universities. */
+export const COST_PER_TRANSCRIPT = 7;
+
+const MONTHS = [
+  "2025-11", "2025-12", "2026-01", "2026-02",
+  "2026-03", "2026-04", "2026-05", "2026-06",
+];
+
+/** Build a monthly usage series from a list of transcript totals. */
+function usageSeries(totals: number[]): UsageMonth[] {
+  return totals.map((transcripts, i) => {
+    // Deterministic channel split: ~55% email, ~35% upload, ~10% API.
+    const email = Math.round(transcripts * 0.55);
+    const upload = Math.round(transcripts * 0.35);
+    const api = transcripts - email - upload;
+    return { month: MONTHS[i], transcripts, by_channel: { email, upload, api } };
+  });
+}
+
+export const SEED_USAGE: Record<string, UsageMonth[]> = {
+  u_meridian: usageSeries([612, 540, 388, 521, 904, 1203, 1488, 1042]),
+  u_lakeside: usageSeries([214, 188, 142, 201, 332, 451, 528, 372]),
+};

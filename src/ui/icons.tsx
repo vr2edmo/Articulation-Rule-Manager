@@ -65,3 +65,15 @@ export const IconLogout = (p: P) => (
 export const IconInfo = (p: P) => (
   <svg {...base(p)}><circle cx="12" cy="12" r="9" /><path d="M12 16v-4M12 8h.01" /></svg>
 );
+export const IconAnalytics = (p: P) => (
+  <svg {...base(p)}><path d="M3 3v18h18" /><path d="M7 15l3-4 3 2 4-6" /></svg>
+);
+export const IconConfig = (p: P) => (
+  <svg {...base(p)}><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3" /><path d="M2 14h4M10 8h4M18 16h4" /></svg>
+);
+export const IconBilling = (p: P) => (
+  <svg {...base(p)}><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20M6 15h4" /></svg>
+);
+export const IconToggleOn = (p: P) => (
+  <svg {...base(p)}><rect x="1" y="6" width="22" height="12" rx="6" /><circle cx="17" cy="12" r="3" /></svg>
+);

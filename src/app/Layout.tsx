@@ -1,13 +1,25 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useSession } from "./session";
 import { Logo } from "@/ui/Logo";
-import { IconCatalog, IconRules, IconAudit, IconLogout, IconChevron } from "@/ui/icons";
+import {
+  IconCatalog,
+  IconRules,
+  IconAudit,
+  IconAnalytics,
+  IconConfig,
+  IconBilling,
+  IconLogout,
+  IconChevron,
+} from "@/ui/icons";
 import type { ReactNode } from "react";
 
 const navItems = [
   { to: "/catalog", label: "Course Catalog", icon: IconCatalog, note: "Layer 0" },
   { to: "/rules", label: "Articulation Rules", icon: IconRules, note: "Layer 1" },
   { to: "/audit", label: "Activity Log", icon: IconAudit, note: "" },
+  { to: "/analytics", label: "Analytics", icon: IconAnalytics, note: "" },
+  { to: "/configuration", label: "Configuration", icon: IconConfig, note: "" },
+  { to: "/billing", label: "Billing", icon: IconBilling, note: "" },
 ];
 
 export function Layout({ children }: { children: ReactNode }) {

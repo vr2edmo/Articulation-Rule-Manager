@@ -13,27 +13,37 @@ import type {
   AuditEntry,
   AuditModule,
   CatalogCourse,
+  ConfigToolId,
   RecordStatus,
+  UniversityConfig,
+  UsageMonth,
 } from "./types";
-import { SEED_CATALOG, SEED_RULES } from "./seed";
+import { SEED_CATALOG, SEED_RULES, SEED_USAGE, defaultUniversityConfig } from "./seed";
 import { nowIso, uid } from "./util";
 
-const STORAGE_KEY = "edmo_arm_state_v1";
+const STORAGE_KEY = "edmo_arm_state_v2";
 
 interface PersistShape {
   catalog: CatalogCourse[];
   rules: ArticulationRule[];
   audit: AuditEntry[];
+  /** Per-university tool configuration, keyed by university_id. */
+  config: Record<string, UniversityConfig>;
+}
+
+function emptyState(): PersistShape {
+  return { catalog: SEED_CATALOG, rules: SEED_RULES, audit: [], config: {} };
 }
 
 function load(): PersistShape {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as PersistShape;
+    // Merge over a fresh base so fields added in later versions are present.
+    if (raw) return { ...emptyState(), ...(JSON.parse(raw) as Partial<PersistShape>) };
   } catch {
     /* ignore corrupt state, fall back to seed */
   }
-  return { catalog: SEED_CATALOG, rules: SEED_RULES, audit: [] };
+  return emptyState();
 }
 
 class Store {
@@ -61,8 +71,41 @@ class Store {
   }
 
   resetToSeed() {
-    this.state = { catalog: SEED_CATALOG, rules: SEED_RULES, audit: [] };
+    this.state = emptyState();
     this.commit();
+  }
+
+  // =======================================================================
+  // CONFIGURATION (Configuration tab)
+  // =======================================================================
+  /** Tool configuration for a university, falling back to defaults. */
+  getConfig(university_id: string): UniversityConfig {
+    return this.state.config[university_id] ?? defaultUniversityConfig();
+  }
+
+  /** Merge a patch into one tool's config; persists and writes a CFG audit entry. */
+  updateToolConfig<T extends ConfigToolId>(
+    university_id: string,
+    tool: T,
+    patch: Partial<UniversityConfig[T]>,
+    actor: string,
+    toolLabel: string,
+  ) {
+    const current = this.getConfig(university_id);
+    const next: UniversityConfig = {
+      ...current,
+      [tool]: { ...current[tool], ...patch },
+    };
+    this.state.config = { ...this.state.config, [university_id]: next };
+    this.log(university_id, "CFG", "Updated configuration", toolLabel, actor);
+    this.commit();
+  }
+
+  // =======================================================================
+  // USAGE & BILLING (Billing tab) — read-only mock telemetry
+  // =======================================================================
+  getUsage(university_id: string): UsageMonth[] {
+    return SEED_USAGE[university_id] ?? [];
   }
 
   // --- audit -------------------------------------------------------------

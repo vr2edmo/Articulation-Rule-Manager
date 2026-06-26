@@ -134,7 +134,8 @@ export interface CurrentUser {
 }
 
 // --- Audit log (PRD F4/F9/F14) --------------------------------------------
-export type AuditModule = "CCM" | "ARM";
+// CFG = tool configuration changes (Configuration tab).
+export type AuditModule = "CCM" | "ARM" | "CFG";
 
 export interface AuditEntry {
   id: string;
@@ -145,6 +146,71 @@ export interface AuditEntry {
   actor: string;
   timestamp: string;
   detail?: string;
+}
+
+// --- Tool configuration (Configuration tab) -------------------------------
+// Per-university, per-tool settings. ARM-relevant tools only. Each tool has an
+// `enabled` master switch plus tool-specific fields. Persisted in the store and
+// every save writes a CFG audit entry.
+export type ConfigToolId =
+  | "transfer_credit"
+  | "gpa"
+  | "document_analyzer"
+  | "email_extractor";
+
+export interface TransferCreditConfig {
+  enabled: boolean;
+  max_transfer_credits: number;
+  warning_threshold: number;
+  /** Minimum prior course grade considered for transfer, e.g. "C (2.0)". */
+  min_grade: string;
+  auto_approve_full: boolean;
+  notify_counselor: boolean;
+  notify_registrar: boolean;
+}
+
+export interface GpaConfig {
+  enabled: boolean;
+  scale: "4.0" | "4.3" | "5.0";
+  include_transfer: boolean;
+  min_good_standing: number;
+  rounding: "1" | "2"; // decimal places
+}
+
+export interface DocumentAnalyzerConfig {
+  enabled: boolean;
+  confidence_threshold: number; // 0–100 %
+  auto_flag_low_confidence: boolean;
+  ocr_language: "English" | "Spanish" | "French";
+  detect_transcripts: boolean;
+  detect_syllabi: boolean;
+}
+
+export interface EmailExtractorConfig {
+  enabled: boolean;
+  inbox_address: string;
+  auto_extract: boolean;
+  /** Comma-separated allowed sender domains. */
+  allowed_domains: string;
+  forward_unrecognized: string;
+}
+
+export interface UniversityConfig {
+  transfer_credit: TransferCreditConfig;
+  gpa: GpaConfig;
+  document_analyzer: DocumentAnalyzerConfig;
+  email_extractor: EmailExtractorConfig;
+}
+
+// --- Usage & billing (Billing tab) ----------------------------------------
+// Mock usage telemetry. In production this is sourced from EDMO's processing
+// pipeline; here it is seeded per university so clients see their own numbers.
+export interface UsageMonth {
+  /** ISO-ish "YYYY-MM" key. */
+  month: string;
+  transcripts: number;
+  /** Channel split — sums to `transcripts`. */
+  by_channel: { email: number; upload: number; api: number };
 }
 
 // --- CSV/XLSX import support ----------------------------------------------

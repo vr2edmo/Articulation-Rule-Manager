@@ -38,6 +38,7 @@ export default function AuditPage() {
               <option value="ALL">All modules</option>
               <option value="CCM">Course Catalog</option>
               <option value="ARM">Articulation Rules</option>
+              <option value="CFG">Configuration</option>
             </select>
             <button className="btn-secondary" onClick={exportLog} disabled={!filtered.length}>
               <IconDownload width={16} height={16} /> Export CSV
@@ -65,7 +66,7 @@ export default function AuditPage() {
                 <tr key={e.id} className="border-b border-edmo-line/70">
                   <td className="whitespace-nowrap px-4 py-2.5 text-edmo-muted">{formatDateTime(e.timestamp)}</td>
                   <td className="px-4 py-2.5">
-                    <Pill tone={e.module === "CCM" ? "blue" : "purple"}>{e.module}</Pill>
+                    <Pill tone={e.module === "CCM" ? "blue" : e.module === "CFG" ? "warn" : "purple"}>{e.module}</Pill>
                   </td>
                   <td className="px-4 py-2.5 font-bold text-edmo-ink">{e.action}</td>
                   <td className="px-4 py-2.5 text-edmo-muted">{e.entity_label}</td>
