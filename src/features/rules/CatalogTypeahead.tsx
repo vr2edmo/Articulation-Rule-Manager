@@ -11,10 +11,12 @@ import { IconSearch, IconCheck } from "@/ui/icons";
 export function CatalogTypeahead({
   universityId,
   value, // selected course_code or ""
+  disabled = false,
   onSelect,
 }: {
   universityId: string;
   value: string;
+  disabled?: boolean;
   onSelect: (course: CatalogCourse | null) => void;
 }) {
   const [query, setQuery] = useState("");
@@ -53,16 +55,18 @@ export function CatalogTypeahead({
               {selected.program_name} · {selected.credit_hours ?? "—"} credits · {selected.catalog_year}
             </div>
           </div>
-          <button
-            className="btn-ghost py-1"
-            onClick={() => {
-              onSelect(null);
-              setQuery("");
-              setOpen(true);
-            }}
-          >
-            Change
-          </button>
+          {!disabled && (
+            <button
+              className="btn-ghost py-1"
+              onClick={() => {
+                onSelect(null);
+                setQuery("");
+                setOpen(true);
+              }}
+            >
+              Change
+            </button>
+          )}
         </div>
       ) : (
         <>
@@ -80,6 +84,7 @@ export function CatalogTypeahead({
               onBlur={() => {
                 blurTimer.current = window.setTimeout(() => setOpen(false), 150);
               }}
+              disabled={disabled}
             />
           </div>
           {open && (

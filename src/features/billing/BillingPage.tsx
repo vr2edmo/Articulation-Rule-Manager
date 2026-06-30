@@ -27,9 +27,8 @@ function KpiCard({ label, value, sub, accent }: { label: string; value: string; 
     <div className="card p-4">
       <div className="text-xs font-bold uppercase tracking-wide text-edmo-muted">{label}</div>
       <div
-        className={`mt-1 text-2xl font-extrabold tracking-tight ${
-          accent === "gold" ? "text-gold-600" : "text-edmo-navy"
-        }`}
+        className={`mt-1 text-2xl font-extrabold tracking-tight ${accent === "gold" ? "text-gold-600" : "text-edmo-navy"
+          }`}
       >
         {value}
       </div>
@@ -147,7 +146,7 @@ export default function BillingPage() {
           <h3 className="mb-4 text-sm font-bold text-edmo-ink">Intake channel</h3>
           <Donut
             slices={[
-              { label: "Email", value: totals.channel.email, color: "#5B2B74" },
+              // { label: "Email", value: totals.channel.email, color: "#5B2B74" },
               { label: "Upload", value: totals.channel.upload, color: "#9C63BC" },
               { label: "API", value: totals.channel.api, color: "#E6B53A" },
             ]}

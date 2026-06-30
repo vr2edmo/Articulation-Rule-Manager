@@ -127,21 +127,29 @@ export interface Slice {
   color: string;
 }
 
-export function Donut({ slices, size = 168 }: { slices: Slice[]; size?: number }) {
+export function Donut({ slices, size = 160 }: { slices: Slice[]; size?: number }) {
   const total = slices.reduce((s, x) => s + x.value, 0) || 1;
   const r = size / 2;
-  const stroke = size * 0.18;
+  const stroke = size * 0.16;
   const radius = r - stroke / 2;
   const circ = 2 * Math.PI * radius;
+  const GAP = 3;
   let offset = 0;
 
   return (
-    <div className="flex items-center gap-5">
-      <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} role="img" aria-label="Channel split">
+    <div className="flex flex-col items-center gap-4">
+      {/* Donut SVG — centered */}
+      <svg
+        viewBox={`0 0 ${size} ${size}`}
+        width={size}
+        height={size}
+        role="img"
+        aria-label="Channel split"
+      >
         <g transform={`rotate(-90 ${r} ${r})`}>
           <circle cx={r} cy={r} r={radius} fill="none" stroke="#EFECF3" strokeWidth={stroke} />
           {slices.map((s) => {
-            const len = (s.value / total) * circ;
+            const len = Math.max((s.value / total) * circ - GAP, 0);
             const seg = (
               <circle
                 key={s.label}
@@ -152,32 +160,45 @@ export function Donut({ slices, size = 168 }: { slices: Slice[]; size?: number }
                 stroke={s.color}
                 strokeWidth={stroke}
                 strokeDasharray={`${len} ${circ - len}`}
-                strokeDashoffset={-offset}
-                strokeLinecap="butt"
+                strokeDashoffset={-(offset + GAP / 2)}
+                strokeLinecap="round"
               />
             );
-            offset += len;
+            offset += (s.value / total) * circ;
             return seg;
           })}
         </g>
-        <text x={r} y={r - 2} textAnchor="middle" className="fill-edmo-ink" fontSize={20} fontWeight={800}>
+        <text x={r} y={r + 4} textAnchor="middle" className="fill-edmo-ink" fontSize={20} fontWeight={800}>
           {fmt(total)}
         </text>
-        <text x={r} y={r + 16} textAnchor="middle" className="fill-edmo-muted" fontSize={10}>
+        <text x={r} y={r + 18} textAnchor="middle" className="fill-edmo-muted" fontSize={10}>
           total
         </text>
       </svg>
-      <ul className="space-y-2">
-        {slices.map((s) => (
-          <li key={s.label} className="flex items-center gap-2 text-sm">
-            <span className="inline-block h-3 w-3 rounded-sm" style={{ background: s.color }} />
-            <span className="font-semibold text-edmo-ink">{s.label}</span>
-            <span className="text-edmo-muted">
-              {fmt(s.value)} · {Math.round((s.value / total) * 100)}%
-            </span>
-          </li>
-        ))}
-      </ul>
+
+      {/* Legend — each slice is a full-width row */}
+      <div className="flex flex-col w-full divide-y divide-edmo-line">
+        {slices.map((s) => {
+          const pct = Math.round((s.value / total) * 100);
+          return (
+            <div key={s.label} className="py-3 first:pt-0 last:pb-0">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="inline-block h-2.5 w-2.5 rounded-full flex-shrink-0" style={{ background: s.color }} />
+                <span className="text-sm font-semibold text-edmo-ink">{s.label}</span>
+                <span className="ml-auto text-sm font-extrabold" style={{ color: s.color }}>{pct}%</span>
+                <span className="text-xs text-edmo-muted w-16 text-right">{fmt(s.value)}</span>
+              </div>
+              <div className="h-1.5 w-full rounded-full" style={{ background: "#EFECF3" }}>
+                <div className="h-1.5 rounded-full" style={{ width: `${pct}%`, background: s.color }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
+
+
+
+

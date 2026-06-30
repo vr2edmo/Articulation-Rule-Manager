@@ -53,6 +53,7 @@ export default function RulesPage() {
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ArticulationRule | null>(null);
+  const [viewingRule, setViewingRule] = useState<ArticulationRule | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [historyFor, setHistoryFor] = useState<ArticulationRule | null>(null);
   const [publishIds, setPublishIds] = useState<string[] | null>(null);
@@ -94,8 +95,17 @@ export default function RulesPage() {
   const selectedDraftIds = selectedRules.filter((r) => r.status !== "PUBLISHED").map((r) => r.id);
   const selectedArchivableIds = selectedRules.filter((r) => r.status !== "ARCHIVED").map((r) => r.id);
 
-  function openEdit(r: ArticulationRule) { setEditing(r); setFormOpen(true); }
-  function openAdd() { setEditing(null); setFormOpen(true); }
+  function openEdit(r: ArticulationRule) {
+    setEditing(r);
+    setViewingRule(null);
+    setFormOpen(true);
+  }
+  function openView(r: ArticulationRule) {
+    setViewingRule(r);
+    setEditing(null);
+    setFormOpen(true);
+  }
+  function openAdd() { setEditing(null); setViewingRule(null); setFormOpen(true); }
 
   function doPublish(ids: string[]) {
     // Guard: a rule whose target isn't in the published catalog would publish UNMATCHED.
@@ -315,14 +325,33 @@ export default function RulesPage() {
             selected={selected}
             onToggle={toggle}
             onToggleAll={toggleAll}
-            onRowClick={openEdit}
+            onRowClick={openView}
             rowClassName={(r) => (r.status === "ARCHIVED" ? "opacity-60" : "")}
           />
         )}
       </div>
       <p className="mt-2 text-xs text-edmo-muted">Showing {filtered.length} of {rules.length} rules.</p>
 
-      {formOpen && <RuleForm open={formOpen} rule={editing} onClose={() => setFormOpen(false)} />}
+      {formOpen && (
+        <RuleForm
+          open={formOpen}
+          rule={viewingRule ?? editing}
+          readOnly={!!viewingRule && !editing}
+          onClose={() => {
+            setFormOpen(false);
+            setViewingRule(null);
+            setEditing(null);
+          }}
+          onEdit={
+            viewingRule
+              ? () => {
+                  setEditing(viewingRule);
+                  setViewingRule(null);
+                }
+              : undefined
+          }
+        />
+      )}
       <RuleVersionHistory rule={historyFor} onClose={() => setHistoryFor(null)} />
 
       <ImportDialog<RuleDraft>

@@ -16,10 +16,10 @@ import type { ReactNode } from "react";
 const navItems = [
   { to: "/catalog", label: "Course Catalog", icon: IconCatalog, note: "Layer 0" },
   { to: "/rules", label: "Articulation Rules", icon: IconRules, note: "Layer 1" },
-  { to: "/audit", label: "Activity Log", icon: IconAudit, note: "" },
-  { to: "/analytics", label: "Analytics", icon: IconAnalytics, note: "" },
   { to: "/configuration", label: "Configuration", icon: IconConfig, note: "" },
+  { to: "/analytics", label: "Analytics", icon: IconAnalytics, note: "" },
   { to: "/billing", label: "Billing", icon: IconBilling, note: "" },
+  { to: "/audit", label: "Activity Log", icon: IconAudit, note: "" },
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -35,7 +35,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <Logo />
             <span className="hidden h-6 w-px bg-edmo-line sm:block" />
             <span className="hidden text-sm font-bold text-edmo-muted sm:block">
-              Articulation Rules Manager
+              Admin Studio
             </span>
           </div>
 
@@ -93,9 +93,8 @@ export function Layout({ children }: { children: ReactNode }) {
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-bold transition-colors ${
-                    active ? "bg-edmo-navy text-white" : "text-edmo-ink hover:bg-edmo-blue-50"
-                  }`}
+                  className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-bold transition-colors ${active ? "bg-edmo-navy text-white" : "text-edmo-ink hover:bg-edmo-blue-50"
+                    }`}
                 >
                   <Icon width={18} height={18} />
                   <span className="flex-1">{item.label}</span>

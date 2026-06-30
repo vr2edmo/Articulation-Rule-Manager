@@ -47,6 +47,7 @@ export default function CatalogPage() {
   // dialogs
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<CatalogCourse | null>(null);
+  const [viewingCourse, setViewingCourse] = useState<CatalogCourse | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [historyFor, setHistoryFor] = useState<CatalogCourse | null>(null);
   const [publishIds, setPublishIds] = useState<string[] | null>(null);
@@ -100,6 +101,12 @@ export default function CatalogPage() {
 
   function openEdit(c: CatalogCourse) {
     setEditing(c);
+    setViewingCourse(null);
+    setFormOpen(true);
+  }
+  function openView(c: CatalogCourse) {
+    setViewingCourse(c);
+    setEditing(null);
     setFormOpen(true);
   }
   function openAdd() {
@@ -278,7 +285,7 @@ export default function CatalogPage() {
             selected={selected}
             onToggle={toggle}
             onToggleAll={toggleAll}
-            onRowClick={openEdit}
+            onRowClick={openView}
             rowClassName={(c) => (c.status === "ARCHIVED" ? "opacity-60" : "")}
           />
         )}
@@ -288,7 +295,15 @@ export default function CatalogPage() {
       </p>
 
       {/* Dialogs */}
-      {formOpen && <CourseForm open={formOpen} course={editing} onClose={() => setFormOpen(false)} />}
+      {formOpen && (
+        <CourseForm
+          open={formOpen}
+          course={viewingCourse ?? editing}
+          readOnly={!!viewingCourse && !editing}
+          onClose={() => { setFormOpen(false); setViewingCourse(null); setEditing(null); }}
+          onEdit={viewingCourse ? () => { setEditing(viewingCourse); setViewingCourse(null); } : undefined}
+        />
+      )}
       <CatalogVersionHistory course={historyFor} onClose={() => setHistoryFor(null)} />
 
       <ImportDialog<CatalogDraft>

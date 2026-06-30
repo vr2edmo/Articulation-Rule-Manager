@@ -328,9 +328,9 @@ const MONTHS = [
 /** Build a monthly usage series from a list of transcript totals. */
 function usageSeries(totals: number[]): UsageMonth[] {
   return totals.map((transcripts, i) => {
-    // Deterministic channel split: ~55% email, ~35% upload, ~10% API.
-    const email = Math.round(transcripts * 0.55);
-    const upload = Math.round(transcripts * 0.35);
+    // Deterministic channel split: ~10% upload, ~90% API.
+    const email = 0;
+    const upload = Math.round(transcripts * 0.10);
     const api = transcripts - email - upload;
     return { month: MONTHS[i], transcripts, by_channel: { email, upload, api } };
   });

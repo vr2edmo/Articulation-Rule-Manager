@@ -9,7 +9,9 @@ import { parseCredits } from "@/domain/util";
 interface Props {
   open: boolean;
   course: CatalogCourse | null; // null => add
+  readOnly?: boolean;
   onClose: () => void;
+  onEdit?: () => void; // called when user clicks Edit in read-only mode
 }
 
 const empty = {
@@ -22,7 +24,7 @@ const empty = {
   catalog_year: "2025-2026",
 };
 
-export function CourseForm({ open, course, onClose }: Props) {
+export function CourseForm({ open, course, readOnly = false, onClose, onEdit }: Props) {
   const { user, activeUniversity } = useSession();
   const toast = useToast();
   const isEdit = !!course;
@@ -107,49 +109,59 @@ export function CourseForm({ open, course, onClose }: Props) {
     <SlideOver
       open={open}
       onClose={onClose}
-      title={isEdit ? "Edit course" : "Add course"}
+      title={readOnly ? "View course" : isEdit ? "Edit course" : "Add course"}
       subtitle={isEdit ? `${course?.course_code} · v${course?.version_number}` : "New courses are saved as DRAFT until published"}
       footer={
-        <>
-          <button className="btn-secondary" onClick={onClose}>
-            Cancel
-          </button>
-          <button className="btn-primary" onClick={save}>
-            Save as Draft
-          </button>
-        </>
+        readOnly ? undefined : (
+          <>
+            <button className="btn-secondary" onClick={onClose}>Cancel</button>
+            <button className="btn-primary" onClick={save}>Save as Draft</button>
+          </>
+        )
       }
     >
-      <Field label="Program name" required error={errors.program_name}>
-        <input
-          className="input"
-          value={form.program_name}
-          onChange={(e) => set("program_name", e.target.value)}
-          placeholder="Bachelor of Science in Computer Science"
-        />
+      <Field label="Program name" required={!readOnly} error={errors.program_name}>
+        {readOnly ? (
+          <div className="text-sm font-semibold text-edmo-navy py-1">{form.program_name || "—"}</div>
+        ) : (
+          <input
+            className="input"
+            value={form.program_name}
+            onChange={(e) => set("program_name", e.target.value)}
+            placeholder="Bachelor of Science in Computer Science"
+          />
+        )}
       </Field>
 
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Course code" required error={errors.course_code}>
-          <input
-            className="input"
-            value={form.course_code}
-            onChange={(e) => set("course_code", e.target.value)}
-            placeholder="CS 301"
-          />
+        <Field label="Course code" required={!readOnly} error={errors.course_code}>
+          {readOnly ? (
+            <div className="text-sm font-semibold text-edmo-navy py-1">{form.course_code || "—"}</div>
+          ) : (
+            <input
+              className="input"
+              value={form.course_code}
+              onChange={(e) => set("course_code", e.target.value)}
+              placeholder="CS 301"
+            />
+          )}
         </Field>
         <Field label="Credit hours">
-          <input
-            className="input"
-            value={form.credit_hours}
-            onChange={(e) => set("credit_hours", e.target.value)}
-            placeholder="3"
-            inputMode="decimal"
-          />
+          {readOnly ? (
+            <div className="text-sm font-semibold text-edmo-navy py-1">{form.credit_hours || "—"}</div>
+          ) : (
+            <input
+              className="input"
+              value={form.credit_hours}
+              onChange={(e) => set("credit_hours", e.target.value)}
+              placeholder="3"
+              inputMode="decimal"
+            />
+          )}
         </Field>
       </div>
 
-      {dupWarning && (
+      {!readOnly && dupWarning && (
         <div className="-mt-2 mb-4">
           <Notice tone="warn">
             A course with code “{form.course_code}” already exists for this university. You can still
@@ -158,28 +170,36 @@ export function CourseForm({ open, course, onClose }: Props) {
         </div>
       )}
 
-      <Field label="Course name" required error={errors.course_name}>
-        <input
-          className="input"
-          value={form.course_name}
-          onChange={(e) => set("course_name", e.target.value)}
-          placeholder="Data Structures and Algorithms"
-        />
+      <Field label="Course name" required={!readOnly} error={errors.course_name}>
+        {readOnly ? (
+          <div className="text-sm font-semibold text-edmo-navy py-1">{form.course_name || "—"}</div>
+        ) : (
+          <input
+            className="input"
+            value={form.course_name}
+            onChange={(e) => set("course_name", e.target.value)}
+            placeholder="Data Structures and Algorithms"
+          />
+        )}
       </Field>
 
       <Field
         label="Course description"
-        hint="This description is used by EDMO's AI for transfer credit matching — include as much detail as possible (topics, methods, learning outcomes)."
+        hint={!readOnly ? "This description is used by EDMO's AI for transfer credit matching — include as much detail as possible (topics, methods, learning outcomes)." : undefined}
       >
-        <textarea
-          className="input min-h-[140px]"
-          value={form.course_description}
-          onChange={(e) => set("course_description", e.target.value)}
-          placeholder="Describe the topics covered, methods, and learning outcomes…"
-        />
+        {readOnly ? (
+          <div className="text-sm text-edmo-ink whitespace-pre-wrap py-1 leading-relaxed">{form.course_description || "—"}</div>
+        ) : (
+          <textarea
+            className="input min-h-[140px]"
+            value={form.course_description}
+            onChange={(e) => set("course_description", e.target.value)}
+            placeholder="Describe the topics covered, methods, and learning outcomes…"
+          />
+        )}
       </Field>
 
-      {thinDescription && (
+      {!readOnly && thinDescription && (
         <div className="-mt-2 mb-4">
           <Notice tone="warn">
             This description is quite short. Detailed descriptions measurably improve AI matching
@@ -189,21 +209,29 @@ export function CourseForm({ open, course, onClose }: Props) {
       )}
 
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Catalog year" required error={errors.catalog_year}>
-          <input
-            className="input"
-            value={form.catalog_year}
-            onChange={(e) => set("catalog_year", e.target.value)}
-            placeholder="2025-2026"
-          />
+        <Field label="Catalog year" required={!readOnly} error={errors.catalog_year}>
+          {readOnly ? (
+            <div className="text-sm font-semibold text-edmo-navy py-1">{form.catalog_year || "—"}</div>
+          ) : (
+            <input
+              className="input"
+              value={form.catalog_year}
+              onChange={(e) => set("catalog_year", e.target.value)}
+              placeholder="2025-2026"
+            />
+          )}
         </Field>
-        <Field label="Prerequisites" hint="Optional">
-          <input
-            className="input"
-            value={form.prerequisites}
-            onChange={(e) => set("prerequisites", e.target.value)}
-            placeholder="CS 101, MATH 120"
-          />
+        <Field label="Prerequisites" hint={!readOnly ? "Optional" : undefined}>
+          {readOnly ? (
+            <div className="text-sm font-semibold text-edmo-navy py-1">{form.prerequisites || "—"}</div>
+          ) : (
+            <input
+              className="input"
+              value={form.prerequisites}
+              onChange={(e) => set("prerequisites", e.target.value)}
+              placeholder="CS 101, MATH 120"
+            />
+          )}
         </Field>
       </div>
     </SlideOver>
