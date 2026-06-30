@@ -19,7 +19,7 @@ export function RuleForm({
   rule,
   readOnly = false,
   onClose,
-  onEdit,
+  onEdit: _onEdit,
 }: {
   open: boolean;
   rule: ArticulationRule | null;

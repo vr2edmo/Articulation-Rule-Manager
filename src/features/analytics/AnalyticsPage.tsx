@@ -111,7 +111,6 @@ export default function AnalyticsPage() {
   if (!activeUniversity) return null;
 
   // Pie/Donut splits with high contrasting brand colors (EDMO Purple vs Academic Gold)
-  const ruleCount = Math.round(totalTranscripts * 0.957);
   const aiPct = 34;
   const rulePct = 66;
 

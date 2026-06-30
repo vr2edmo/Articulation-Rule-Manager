@@ -24,7 +24,7 @@ const empty = {
   catalog_year: "2025-2026",
 };
 
-export function CourseForm({ open, course, readOnly = false, onClose, onEdit }: Props) {
+export function CourseForm({ open, course, readOnly = false, onClose, onEdit: _onEdit }: Props) {
   const { user, activeUniversity } = useSession();
   const toast = useToast();
   const isEdit = !!course;
